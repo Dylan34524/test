@@ -178,21 +178,21 @@
                 jobElement.classList.add("job-listing");
                 jobElement.innerHTML =
                     `<h3>${job.jobTitle} at ${job.companyName}</h3>
-                        <p>${job.jobDescription}</p>
-                        <button onclick="showApplyForm(${index})">Apply for Job</button>
-                        <div id="applyForm${index}" class="apply-form">
-                            <h4>Application Form</h4>
-                            <label for="studentName${index}">Your Name:</label>
-                            <input type="text" id="studentName${index}" required>
+                            <p>${job.jobDescription}</p>
+                            <button onclick="showApplyForm(${index})">Apply for Job</button>
+                            <div id="applyForm${index}" class="apply-form">
+                                <h4>Application Form</h4>
+                                <label for="studentName${index}">Your Name:</label>
+                                <input type="text" id="studentName${index}" required>
 
-                            <label for="studentEmail${index}">Your Email:</label>
-                            <input type="email" id="studentEmail${index}" required>
+                                <label for="studentEmail${index}">Your Email:</label>
+                                <input type="email" id="studentEmail${index}" required>
 
-                            <label for="desiredJob${index}">Job Title You Want:</label>
-                            <input type="text" id="desiredJob${index}" value="${job.jobTitle}" readonly required>
+                                <label for="desiredJob${index}">Job Title You Want:</label>
+                                <input type="text" id="desiredJob${index}" value="${job.jobTitle}" readonly required>
 
-                            <button type="button" onclick="submitApplication(${index})">Submit Application</button>
-                        </div>`;
+                                <button type="button" onclick="submitApplication(${index})">Submit Application</button>
+                            </div>`;
                 jobListings.appendChild(jobElement);
             });
         }
@@ -228,6 +228,32 @@
                 document.getElementById("applicationStatus").innerText = `Your application status: ${student.applicationStatus}`;
             } else {
                 document.getElementById("applicationStatus").innerText = "You have not applied for any jobs yet.";
+            }
+        }
+        let isHomeTabActive = false;  // Track if Home tab is active
+
+        function openTab(evt, tabName) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " active";
+
+            // Only refresh when the "Home" tab is clicked and it's already active
+            if (tabName === "home") {
+                if (isHomeTabActive) {
+                    location.reload();  // Reload the page
+                } else {
+                    isHomeTabActive = true;  // Mark "Home" as active
+                }
+            } else {
+                isHomeTabActive = false;  // If another tab is clicked, reset the flag
             }
         }
     </script>
