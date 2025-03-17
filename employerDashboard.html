@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employer Portal</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #28257D;
+            margin: 0;
+            display: flex;
+        }
+
+        /* Sidebar Navigation */
+        .tab {
+            float: left;
+            border: 1px solid black;
+            background-color: #28257D;
+            width: 20%;
+            height: 100vh;
+            padding-top: 20px;
+            color: white;
+            padding-left: 20px;
+        }
+
+        .welcome-message {
+            font-size: 20px;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .tab button {
+            display: block;
+            background-color: inherit;
+            color: black;
+            padding: 15px;
+            width: 100%;
+            border: none;
+            outline: none;
+            text-align: left;
+            cursor: pointer;
+            transition: 0.3s;
+            font-size: 17px;
+        }
+
+            .tab button:hover {
+                background-color: #2D29A2;
+            }
+
+            .tab button.active {
+                background-color: #2D29A2;
+            }
+
+        /* Tab content */
+        .tabcontent {
+            float: left;
+            padding: 20px;
+            width: 80%;
+            border-left: 1px solid black;
+            height: 100vh;
+            display: none;
+            background-color: white;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background: white;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #FDE803;
+            color: black;
+            padding: 15px;
+            margin: 10px 0;
+            border: solid;
+            cursor: pointer;
+            width: 100%;
+        }
+
+            button:hover {
+                background-color: #FDE803;
+            }
+
+        .job-listing {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+
+        .application-details {
+            display: none;
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f0f0f0;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Navigation -->
+    <div class="tab">
+        <div id="welcomeMessage" class="welcome-message"></div> <!-- Welcome Message Section -->
+        <button class="tablinks" onclick="openTab(event, 'home')" id="defaultOpen">Home</button>
+        <button class="tablinks" onclick="openTab(event, 'postJob')">Post a Job</button>
+        <button class="tablinks" onclick="openTab(event, 'viewApplications')">View Applications</button>
+        <button class="tablinks" onclick="openTab(event, 'help')">Help</button>
+    </div>
+
+    <!-- Home -->
+    <div id="home" class="tabcontent">
+        <h2>Welcome to the Employer Portal</h2>
+        <p>Post job opportunities and manage job applications</p>
+    </div>
+
+    <!-- Post Job -->
+    <div id="postJob" class="tabcontent">
+        <div class="container">
+            <h2>Post a Job</h2>
+            <form id="jobPostForm">
+                <label for="companyName">Company Name:</label>
+                <input type="text" id="companyName" required>
+
+                <label for="jobTitle">Job Title:</label>
+                <input type="text" id="jobTitle" required>
+
+                <label for="jobDescription">Job Description:</label>
+                <textarea id="jobDescription" required></textarea>
+
+                <button type="button" onclick="postJob()">Post Job</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- View Applications -->
+    <div id="viewApplications" class="tabcontent">
+        <div class="container">
+            <h2>Applications for Your Jobs</h2>
+            <div id="applicationList"></div>
+            <div id="applicationDetails" class="application-details">
+                <h3>Application Details</h3>
+                <p><strong>Name:</strong> <span id="applicantName"></span></p>
+                <p><strong>Email:</strong> <span id="applicantEmail"></span></p>
+                <p><strong>Message:</strong></p>
+                <p id="applicantMessage"></p>
+                <button onclick="updateApplication('accept')">Accept</button>
+                <button onclick="updateApplication('decline')">Decline</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Help Section -->
+    <div id="help" class="tabcontent">
+        <h2>Help & Instructions</h2>
+        <p>Employers: Post jobs under 'Post a Job' and view applications under 'View Applications'.</p>
+    </div>
+
+    <script>
+        // Open the default tab when the page loads
+        document.getElementById("defaultOpen").click();
+
+        // Display employer username after login
+        window.onload = function () {
+            const storedUser = JSON.parse(localStorage.getItem("user"));
+            if (storedUser && storedUser.role === 'employer') {
+                const welcomeMessage = document.getElementById("welcomeMessage");
+                welcomeMessage.textContent = `Welcome, ${storedUser.username}!`;
+                displayApplications(); // Load job applications when employer logs in
+            } else {
+                // If the user is not found, redirect to the login page
+                window.location.href = "index.html"; // Redirect to login page
+            }
+        };
+
+        function openTab(evt, tabName) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+
+        // Post a job
+        function postJob() {
+            const companyName = document.getElementById("companyName").value;
+            const jobTitle = document.getElementById("jobTitle").value;
+            const jobDescription = document.getElementById("jobDescription").value;
+
+            const postedJobs = JSON.parse(localStorage.getItem("postedJobs")) || [];
+
+            postedJobs.push({
+                companyName,
+                jobTitle,
+                jobDescription,
+                applications: []
+            });
+
+            localStorage.setItem("postedJobs", JSON.stringify(postedJobs));
+
+            alert("Job posted successfully!");
+        }
+
+        // Display applications for a specific job
+        function displayApplications() {
+            const postedJobs = JSON.parse(localStorage.getItem("postedJobs")) || [];
+            const applicationList = document.getElementById("applicationList");
+            applicationList.innerHTML = ""; // Clear previous applications
+
+            postedJobs.forEach((job, jobIndex) => {
+                const jobElement = document.createElement("div");
+                jobElement.classList.add("job-listing");
+                jobElement.innerHTML = `
+                        <h3>${job.jobTitle} at ${job.companyName}</h3>
+                        <p>${job.jobDescription}</p>
+                        <h4>Applications:</h4>
+                    `;
+
+                job.applications.forEach((application, appIndex) => {
+                    const applicationElement = document.createElement("div");
+                    applicationElement.innerHTML = `
+                            <p>Name: ${application.studentName} | Email: ${application.studentEmail} | Status: ${application.status}</p>
+                            <button onclick="viewApplicationDetails(${jobIndex}, ${appIndex})">View Application</button>
+                        `;
+                    jobElement.appendChild(applicationElement);
+                });
+
+                applicationList.appendChild(jobElement);
+            });
+        }
+
+        // View application details when clicked
+        function viewApplicationDetails(jobIndex, appIndex) {
+            const postedJobs = JSON.parse(localStorage.getItem("postedJobs")) || [];
+            const application = postedJobs[jobIndex].applications[appIndex];
+
+            // Display the application details
+            document.getElementById("applicantName").textContent = application.studentName;
+            document.getElementById("applicantEmail").textContent = application.studentEmail;
+            document.getElementById("applicantMessage").textContent = application.message;
+            document.getElementById("applicationDetails").style.display = "block";
+
+            // Store job and application index for later use
+            localStorage.setItem("selectedJobIndex", jobIndex);
+            localStorage.setItem("selectedAppIndex", appIndex);
+        }
+
+        // Accept or decline the application
+        function updateApplication(status) {
+            const jobIndex = localStorage.getItem("selectedJobIndex");
+            const appIndex = localStorage.getItem("selectedAppIndex");
+            const postedJobs = JSON.parse(localStorage.getItem("postedJobs")) || [];
+
+            // Update the application status
+            postedJobs[jobIndex].applications[appIndex].status = status;
+
+            localStorage.setItem("postedJobs", JSON.stringify(postedJobs));
+
+            // Send the update to the student (for now, simply alert the action)
+            alert(`Application ${status}ed successfully!`);
+
+            // Reload the applications list
+            displayApplications();
+
+            // Hide the application details section
+            document.getElementById("applicationDetails").style.display = "none";
+        }
+    </script>
+</body>
+</html>

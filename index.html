@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Website Header</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            background: url('r.jpg') repeat;
+            background-size: cover;
+        }
+
+        .header {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            background-color: #333;
+            padding: 10px 20px;
+            width: 100%;
+        }
+
+            .header button {
+                background-color: #34017E;
+                color: white;
+                border: none;
+                padding: 10px 15px;
+                margin-left: 10px;
+                cursor: pointer;
+                border-radius: 5px;
+            }
+
+                .header button:hover {
+                    background-color: #520AB9;
+                }
+
+        .image-container {
+            position: absolute;
+            top: 50%;
+            right: 10%;
+            transform: translateY(-50%);
+        }
+
+            .image-container img {
+                width: 450px;
+                height: 300px;
+                border: 5px solid black;
+            }
+
+        .text-container {
+            position: absolute;
+            top: 50%;
+            left: 10%;
+            transform: translateY(-50%);
+            color: #272727;
+            font-size: 24px;
+            max-width: 400px;
+        }
+
+            .text-container button {
+                background-color: #34017E;
+                color: white;
+                border: none;
+                padding: 10px 20px;
+                margin-top: 10px;
+                cursor: pointer;
+                border-radius: 5px;
+                font-size: 18px;
+            }
+
+                .text-container button:hover {
+                    background-color: #520AB9;
+                }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            padding-top: 100px;
+            overflow: auto;
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+            box-sizing: border-box;
+            position: relative; /* To allow absolute positioning of the close button */
+        }
+
+            .modal-content input {
+                width: 90%;
+                padding: 10px;
+                margin: 10px 0;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+            }
+
+            .modal-content button {
+                background-color: #34017E;
+                color: white;
+                border: none;
+                padding: 10px 20px;
+                margin-top: 10px;
+                cursor: pointer;
+                border-radius: 5px;
+                font-size: 18px;
+            }
+
+                .modal-content button:hover {
+                    background-color: #520AB9;
+                }
+
+        .role-selection {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+            .role-selection button {
+                background-color: #34017E;
+                color: white;
+                border: none;
+                padding: 10px 20px;
+                margin: 5px;
+                cursor: pointer;
+                border-radius: 5px;
+            }
+
+                .role-selection button:hover {
+                    background-color: #520AB9;
+                }
+
+        /* Close Button Styles */
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #888;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+            .close-btn:hover {
+                color: #520AB9;
+            }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <button onclick="signUp()">Sign Up</button>
+        <button onclick="logIn()">Log In</button>
+    </div>
+
+    <div class="text-container">
+        <h1>Welcome to Job Availability</h1>
+        <p>Discover amazing opportunities for yourself and find the job that could fit you.</p>
+        <button onclick="getStarted()">Get Started</button>
+        <button onclick="clearLocalStorage()">Clear Local Storage</button>
+    </div>
+
+    <div class="image-container">
+        <img src="teacher.jpg" alt="Image">
+    </div>
+
+    <!-- Modal for Role Selection -->
+    <div id="roleSelectionModal" class="modal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal('roleSelectionModal')">×</button>
+            <h2>Choose Your Role</h2>
+            <div class="role-selection">
+                <button onclick="chooseRole('student')">Student</button>
+                <button onclick="chooseRole('employer')">Employer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Sign Up -->
+    <div id="signUpModal" class="modal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal('signUpModal')">×</button>
+            <h2>Create Account</h2>
+            <div id="businessNameField" style="display: none;">
+                <label for="businessName">Business Name</label>
+                <input type="text" id="businessName" placeholder="Enter your business name" required>
+            </div>
+            <label for="username">Username</label>
+            <input type="text" id="username" placeholder="Enter your username" required>
+            <label for="email">Email</label>
+            <input type="email" id="email" placeholder="Enter your email" required>
+            <label for="password">Password</label>
+            <input type="password" id="password" placeholder="Enter your password" required>
+            <label for="confirmPassword">Confirm Password</label>
+            <input type="password" id="confirmPassword" placeholder="Confirm your password" required>
+            <button onclick="createAccount()">Create Account</button>
+        </div>
+    </div>
+
+    <!-- Modal for Log In -->
+    <div id="logInModal" class="modal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal('logInModal')">×</button>
+            <h2>Log In</h2>
+            <label for="loginEmail">Email</label>
+            <input type="email" id="loginEmail" placeholder="Enter your email" required>
+            <label for="loginPassword">Password</label>
+            <input type="password" id="loginPassword" placeholder="Enter your password" required>
+            <button onclick="logInUser()">Log In</button>
+        </div>
+    </div>
+
+    <script>
+        let selectedRole = '';
+
+        function getStarted() {
+            document.getElementById("roleSelectionModal").style.display = "block";
+        }
+
+        function signUp() {
+            document.getElementById("roleSelectionModal").style.display = "block"; // Show the role selection modal when clicking Sign Up
+        }
+
+        function chooseRole(role) {
+            selectedRole = role;
+            closeModal('roleSelectionModal');
+            signUpForm(); // Show sign-up modal for both students and employers
+        }
+
+        function signUpForm() {
+            document.getElementById("signUpModal").style.display = "block";
+
+            // Show business name input for employer
+            if (selectedRole === 'employer') {
+                document.getElementById("businessNameField").style.display = "block";
+            } else {
+                document.getElementById("businessNameField").style.display = "none";
+            }
+        }
+
+        function logIn() {
+            document.getElementById("logInModal").style.display = "block";
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = "none";
+        }
+
+        function createAccount() {
+            const username = document.getElementById("username").value;
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+            const confirmPassword = document.getElementById("confirmPassword").value;
+            const businessName = selectedRole === 'employer' ? document.getElementById("businessName").value : "";
+
+            // Validate the form inputs
+            if (!username || !email || !password || !confirmPassword || (selectedRole === 'employer' && !businessName)) {
+                alert("Please fill in all fields");
+                return;
+            }
+
+            // Validate email format
+            const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+            if (!emailPattern.test(email)) {
+                alert("Please enter a valid email address.");
+                return;
+            }
+
+            // Check if passwords match
+            if (password !== confirmPassword) {
+                alert("Passwords do not match.");
+                return;
+            }
+
+            // Store user data in localStorage (you can later replace this with backend storage)
+            const user = { username, email, password, role: selectedRole, businessName };
+            localStorage.setItem("user", JSON.stringify(user));
+            alert("Account created successfully!");
+            closeModal('signUpModal');
+        }
+
+        function logInUser() {
+            const loginEmail = document.getElementById("loginEmail").value;
+            const loginPassword = document.getElementById("loginPassword").value;
+
+            // Retrieve user data from localStorage
+            const storedUser = JSON.parse(localStorage.getItem("user"));
+
+            // Validate the entered email and password
+            if (!storedUser) {
+                alert("No user found, please sign up first.");
+                return;
+            }
+
+            if (loginEmail !== storedUser.email || loginPassword !== storedUser.password) {
+                alert("Incorrect email or password.");
+                return;
+            }
+
+            // Redirect based on the user role
+            if (storedUser.role === 'student') {
+                window.location.href = "studentDashboard.html"; // Redirect to student dashboard
+            } else {
+                window.location.href = "employerDashboard.html"; // Redirect to employer dashboard
+            }
+        }
+
+        function clearLocalStorage() {
+            localStorage.clear();
+            alert("Local storage cleared!");
+        }
+    </script>
+</body>
+</html>
